@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seoul Adventure — Feb 28 to Mar 4, 2026</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a0c18" media="(prefers-color-scheme: dark)">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Seoul 🇰🇷">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ── Light / Dark Theme ── */
+        :root {
+            --body-bg: #f0f0f5;
+            --bg: #f0f0f5;
+            --card-bg: #ffffff;
+            --text: #1a1a2e;
+            --subtext: #5a5a78;
+            --border: #d0d0e0;
+            --highlight-bg: #fff5f5;
+            --highlight-border: #c62828;
+            --time-bg: #c62828;
+            --time-color: #ffffff;
+            --day1: #c62828;
+            --day2: #1565c0;
+            --day3: #2e7d32;
+            --day4: #e65100;
+            --day5: #6a1b9a;
+            --tab-active-bg: #c62828;
+            --tab-inactive-bg: rgba(0,0,0,0.06);
+            --tab-hover-bg: rgba(0,0,0,0.1);
+            --section-bg: #ffffff;
+            --food-card-bg: #fff8f8;
+            --food-card-border: #e0b0b0;
+            --hero-grad: linear-gradient(135deg, rgba(198,40,40,0.85), rgba(21,101,192,0.85));
+            --shadow: rgba(0,0,0,0.1);
+        }
+        [data-theme="dark"] {
+            --body-bg: #0a0c18;
+            --bg: #090c1a;
+            --card-bg: #12162a;
+            --text: #e8eaf6;
+            --subtext: #9098c8;
+            --border: #363c6e;
+            --highlight-bg: #1a1020;
+            --highlight-border: #ef5350;
+            --time-bg: #b71c1c;
+            --time-color: #ffffff;
+            --day1: #ef5350;
+            --day2: #42a5f5;
+            --day3: #66bb6a;
+            --day4: #ffa726;
+            --day5: #ab47bc;
+            --tab-active-bg: #c62828;
+            --tab-inactive-bg: rgba(255,255,255,0.08);
+            --tab-hover-bg: rgba(255,255,255,0.15);
+            --section-bg: #12162a;
+            --food-card-bg: #1a1020;
+            --food-card-border: #4a2040;
+            --hero-grad: linear-gradient(135deg, rgba(120,20,20,0.9), rgba(10,40,100,0.9));
+            --shadow: rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--body-bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed; top: 18px; right: 18px; z-index: 9999;
+            background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4);
+            color: white; border-radius: 50px; padding: 8px 16px;
+            cursor: pointer; font-size: 0.9em; font-weight: 600;
+            backdrop-filter: blur(8px); transition: all 0.3s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .theme-toggle:hover { background: rgba(255,255,255,0.35); transform: scale(1.05); }
+        [data-theme="dark"] .theme-toggle { background: rgba(0,0,0,0.35); border-color: rgba(255,255,255,0.2); }
+
+        /* Hero */
+        .hero {
+            background: var(--hero-grad), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="p" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse"><circle cx="60" cy="60" r="2" fill="%23fff" opacity="0.07"/><rect x="50" y="20" width="20" height="40" rx="3" fill="%23fff" opacity="0.04"/></pattern></defs><rect width="1200" height="600" fill="%231a1020"/><rect width="1200" height="600" fill="url(%23p)"/></svg>');
+            background-size: cover; background-position: center;
+            color: white; padding: 44px 20px; text-align: center;
+            min-height: 420px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+        .hero h1 { font-size: 2.4em; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); animation: fadeInDown 0.8s ease-out; }
+        .hero .subtitle { font-size: 1.1em; margin-bottom: 14px; opacity: 0.9; animation: fadeInUp 0.8s ease-out 0.2s both; }
+        .hero .dates { font-size: 1em; background: rgba(255,255,255,0.1); padding: 10px 22px; border-radius: 50px; backdrop-filter: blur(10px); animation: fadeInUp 0.8s ease-out 0.4s both; }
+        .hero .flag { font-size: 3em; margin-bottom: 10px; }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Tabs */
+        .tabs {
+            display: flex; justify-content: center; gap: 6px;
+            padding: 16px 20px 0; max-width: 600px; margin: 0 auto;
+        }
+        .tab-btn {
+            flex: 1; padding: 12px 8px; border: none; border-radius: 12px 12px 0 0;
+            background: var(--tab-inactive-bg); color: var(--subtext);
+            font-size: 0.95em; font-weight: 600; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover { background: var(--tab-hover-bg); }
+        .tab-btn.active { background: var(--tab-active-bg); color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+        /* Day Section */
+        .day-section {
+            background: var(--card-bg); border: 1px solid var(--border);
+            margin: 18px 0; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow); animation: slideIn 0.6s ease-out;
+        }
+        .day-header {
+            color: white; padding: 14px 18px; border-left: 5px solid;
+        }
+        .day-header h2 { font-size: 1.3em; margin-bottom: 3px; }
+        .day-header .emoji { font-size: 1.5em; margin-right: 8px; }
+        .day-header .korean { font-size: 0.85em; opacity: 0.85; }
+        .day-content { padding: 16px 18px; }
+
+        /* Location Card */
+        .location {
+            margin: 12px 0; padding: 12px 14px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-left: 4px solid var(--highlight-border);
+            border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .location:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(198,40,40,0.2); }
+        .location-title { font-size: 1.02em; font-weight: 600; color: var(--highlight-border); margin-bottom: 5px; }
+        .location-title .ko { font-weight: 400; opacity: 0.75; font-size: 0.9em; margin-left: 6px; }
+        .time {
+            display: inline-block; background: var(--time-bg); color: white;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.9em;
+            margin-bottom: 10px; font-weight: 600;
+        }
+        .location-details { margin-top: 6px; font-size: 0.87em; color: var(--subtext); }
+        .location-details p { margin: 3px 0; }
+        .location-details strong { color: var(--text); }
+        .badge {
+            display: inline-block; background: #2e7d32; color: white;
+            padding: 2px 10px; border-radius: 12px; font-size: 0.78em;
+            font-weight: 600; margin-left: 8px; vertical-align: middle;
+        }
+
+        /* Past event dimming */
+        .day-section.past { opacity: 0.45; filter: grayscale(40%); }
+
+        /* Map */
+        #map { height: 65vh; min-height: 400px; border-radius: 12px; box-shadow: 0 4px 20px var(--shadow); }
+        .map-legend { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .map-legend span { font-size: 0.85em; padding: 4px 10px; border-radius: 20px; color: white; font-weight: 600; }
+
+        /* Food Guide */
+        .food-section { margin: 20px 0; }
+        .food-section h3 { font-size: 1.2em; margin-bottom: 12px; color: var(--highlight-border); border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+        .food-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .food-card {
+            background: var(--food-card-bg); border: 1px solid var(--food-card-border);
+            border-radius: 10px; padding: 16px; transition: transform 0.3s;
+        }
+        .food-card:hover { transform: translateY(-3px); }
+        .food-card h4 { color: var(--highlight-border); margin-bottom: 6px; font-size: 1.05em; }
+        .food-card h4 .ko { font-weight: 400; opacity: 0.7; font-size: 0.88em; }
+        .food-card p { font-size: 0.88em; color: var(--subtext); margin: 4px 0; }
+        .food-card .tag { display: inline-block; background: var(--highlight-bg); border: 1px solid var(--border); padding: 2px 8px; border-radius: 10px; font-size: 0.78em; margin-top: 6px; }
+
+        /* Footer */
+        footer {
+            text-align: center; padding: 20px; margin-top: 30px;
+            font-size: 0.85em; color: var(--subtext); border-top: 1px solid var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.7em; }
+            .hero .subtitle { font-size: 0.95em; }
+            .tabs { gap: 4px; padding: 12px 12px 0; }
+            .tab-btn { padding: 10px 4px; font-size: 0.85em; }
+            .container { padding: 12px; }
+            .food-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙 Dark</button>
+
+    <div class="hero">
+        <div class="flag">🇰🇷</div>
+        <h1>Seoul Adventure</h1>
+        <div class="subtitle">서울 여행 — 5 Days in South Korea</div>
+        <div class="dates">📅 February 28 — March 4, 2026</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('itinerary')">📋 Itinerary</button>
+        <button class="tab-btn" onclick="showTab('map')">🗺️ Map</button>
+        <button class="tab-btn" onclick="showTab('food')">🍜 Food Guide</button>
+    </div>
+
+    <!-- ITINERARY TAB -->
+    <div id="itinerary" class="tab-content active">
+        <div class="container">
+
+            <!-- Day 1: Sat 28 Feb -->
+            <div class="day-section" data-date="2026-02-28" style="border-left-color: var(--day1);">
+                <div class="day-header" style="background: var(--day1);">
+                    <h2><span class="emoji">✈️</span> Day 1 — Saturday, Feb 28</h2>
+                    <div class="korean">토요일 — Arrival & Myeongdong</div>
+                </div>
+                <div class="day-content">
+                    <div class="location">
+                        <div class="location-title">Depart DMK → Incheon <span class="ko">(인천)</span></div>
+                        <div class="time">✈️ Flight</div>
+                        <div class="location-details">
+                            <p><strong>From:</strong> Bangkok Don Mueang (DMK)</p>
+                            <p><strong>To:</strong> Seoul Incheon (ICN)</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Buy T-Money Card <span class="ko">(티머니 카드)</span></div>
+                        <div class="location-details">
+                            <p>Grab a T-Money card at the airport or convenience store for public transit & payments.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Myeongdong <span class="ko">(명동)</span></div>
+                        <div class="location-details">
+                            <p>Seoul's iconic shopping district — cosmetics, street food, and vibrant night lights.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Cheonggyecheon Stream <span class="ko">(청계천)</span></div>
+                        <div class="location-details">
+                            <p>A peaceful urban stream running through downtown. Perfect for an evening stroll.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 2: Sun 1 Mar -->
+            <div class="day-section" data-date="2026-03-01" style="border-left-color: var(--day2);">
+                <div class="day-header" style="background: var(--day2);">
+                    <h2><span class="emoji">🏯</span> Day 2 — Sunday, Mar 1</h2>
+                    <div class="korean">일요일 — Palaces & Universities</div>
+                </div>
+                <div class="day-content">
+                    <div class="location">
+                        <div class="location-title">Gyeongbokgung Palace <span class="ko">(경복궁)</span></div>
+                        <div class="location-details">
+                            <p>The grandest of Seoul's Five Grand Palaces. Don't miss the Royal Guard Changing Ceremony!</p>
+                            <p><strong>Tip:</strong> Rent a hanbok nearby for free entry + gorgeous photos.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Bukchon Hanok Village <span class="ko">(북촌한옥마을)</span></div>
+                        <div class="location-details">
+                            <p>Traditional Korean village with centuries-old hanok houses. Walk the narrow alleys between Gyeongbokgung and Changdeokgung.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Edae <span class="ko">(이대)</span></div>
+                        <div class="location-details">
+                            <p>Trendy university area near Ewha — great for affordable shopping, cafes, and people-watching.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Ewha Womans University <span class="ko">(이화여자대학교)</span></div>
+                        <div class="location-details">
+                            <p>Stunning Gothic-style campus with the famous "Valley" building embedded into the hillside.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Hongdae <span class="ko">(홍대)</span></div>
+                        <div class="location-details">
+                            <p>Seoul's youth & indie culture hub. Street performances, buskers, endless cafes, and nightlife.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 3: Mon 2 Mar -->
+            <div class="day-section" data-date="2026-03-02" style="border-left-color: var(--day3);">
+                <div class="day-header" style="background: var(--day3);">
+                    <h2><span class="emoji">🌃</span> Day 3 — Monday, Mar 2</h2>
+                    <div class="korean">월요일 — Namsan & Seoul Tower</div>
+                </div>
+                <div class="day-content">
+                    <div class="location">
+                        <div class="location-title">Namsan Park <span class="ko">(남산공원)</span></div>
+                        <div class="location-details">
+                            <p>Beautiful park on Namsan Mountain. Walk the scenic trails through the forest right in the city center.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">N Seoul Tower <span class="ko">(엔서울타워)</span></div>
+                        <div class="location-details">
+                            <p>Iconic Seoul landmark. Take the cable car or hike up for panoramic city views. Love locks at the base!</p>
+                            <p><strong>Best:</strong> Visit at sunset for golden hour over the city.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 4: Tue 3 Mar -->
+            <div class="day-section" data-date="2026-03-03" style="border-left-color: var(--day4);">
+                <div class="day-header" style="background: var(--day4);">
+                    <h2><span class="emoji">💆</span> Day 4 — Tuesday, Mar 3</h2>
+                    <div class="korean">화요일 — Gangnam & COEX</div>
+                </div>
+                <div class="day-content">
+                    <div class="location">
+                        <div class="location-title">Banobagi Dermatologic Center <span class="ko">(바노바기 피부과)</span> <span class="badge">✅ Booked 11:00</span></div>
+                        <div class="time">🕐 11:00 AM</div>
+                        <div class="location-details">
+                            <p><strong>Location:</strong> Gangnam Branch</p>
+                            <p>Appointment already booked. Bring your confirmation!</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Gangnam <span class="ko">(강남)</span></div>
+                        <div class="location-details">
+                            <p>The famous district. Luxury shopping, K-pop agencies, and the Gangnam Style vibe.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Starfield Library <span class="ko">(별마당 도서관)</span></div>
+                        <div class="location-details">
+                            <p>Magnificent two-story library inside COEX Mall. One of the most Instagrammed spots in Seoul.</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Yeouido Hangang Park <span class="ko">(여의도한강공원)</span></div>
+                        <div class="location-details">
+                            <p>Relax by the Han River. Rent a bike, grab delivery chicken & beer (치맥), and watch the sunset.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 5: Wed 4 Mar -->
+            <div class="day-section" data-date="2026-03-04" style="border-left-color: var(--day5);">
+                <div class="day-header" style="background: var(--day5);">
+                    <h2><span class="emoji">🛫</span> Day 5 — Wednesday, Mar 4</h2>
+                    <div class="korean">수요일 — Departure Day</div>
+                </div>
+                <div class="day-content">
+                    <div class="location">
+                        <div class="location-title">Check-in at Incheon Airport <span class="ko">(인천공항)</span></div>
+                        <div class="location-details">
+                            <p>Arrive early for check-in. Last-minute duty-free shopping!</p>
+                        </div>
+                    </div>
+                    <div class="location">
+                        <div class="location-title">Flight to Bangkok</div>
+                        <div class="time">✈️ 11:20 – 15:30</div>
+                        <div class="location-details">
+                            <p><strong>Route:</strong> ICN → DMK</p>
+                            <p>Safe travels home! 🏠</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MAP TAB -->
+    <div id="map-tab" class="tab-content">
+        <div class="container">
+            <div id="map"></div>
+            <div class="map-legend">
+                <span style="background:var(--day1);">Day 1</span>
+                <span style="background:var(--day2);">Day 2</span>
+                <span style="background:var(--day3);">Day 3</span>
+                <span style="background:var(--day4);">Day 4</span>
+                <span style="background:var(--day5);">Day 5</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOD TAB -->
+    <div id="food" class="tab-content">
+        <div class="container">
+
+            <div class="food-section">
+                <h3>🍢 Must-Try Street Food</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <h4>Tteokbokki <span class="ko">(떡볶이)</span></h4>
+                        <p>Spicy rice cakes in gochujang sauce — Korea's #1 street food. Chewy, spicy, addictive.</p>
+                        <p><strong>Best at:</strong> Myeongdong street stalls</p>
+                        <span class="tag">🌶️ Spicy</span> <span class="tag">💰 Budget</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Odeng <span class="ko">(오뎅)</span></h4>
+                        <p>Fish cake skewers in warm broth. Perfect winter comfort food — and the broth is free!</p>
+                        <p><strong>Best at:</strong> Any street stall</p>
+                        <span class="tag">🐟 Seafood</span> <span class="tag">💰 Budget</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Hotteok <span class="ko">(호떡)</span></h4>
+                        <p>Sweet pancake filled with brown sugar, cinnamon & nuts. Crispy outside, gooey inside.</p>
+                        <p><strong>Best at:</strong> Namdaemun Market, Myeongdong</p>
+                        <span class="tag">🍬 Sweet</span> <span class="tag">💰 Budget</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Gyeranppang <span class="ko">(계란빵)</span></h4>
+                        <p>Egg bread — a fluffy, slightly sweet loaf with a whole egg baked on top. Warm & filling.</p>
+                        <span class="tag">🍳 Breakfast</span> <span class="tag">💰 Budget</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Gimbap <span class="ko">(김밥)</span></h4>
+                        <p>Korean seaweed rice rolls — like sushi's cousin. Grab from any convenience store for a quick bite.</p>
+                        <span class="tag">🍙 Snack</span> <span class="tag">💰 Budget</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Bungeoppang <span class="ko">(붕어빵)</span></h4>
+                        <p>Fish-shaped pastry filled with sweet red bean paste. A beloved winter street snack.</p>
+                        <span class="tag">🍬 Sweet</span> <span class="tag">💰 Budget</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="food-section">
+                <h3>🍲 Korean Restaurant Classics</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <h4>Korean BBQ <span class="ko">(고기구이)</span></h4>
+                        <p>Grill your own samgyeopsal (pork belly) or galbi (beef ribs) right at the table. Wrap in lettuce with ssamjang!</p>
+                        <p><strong>Best areas:</strong> Hongdae, Gangnam, Myeongdong</p>
+                        <span class="tag">🥩 Meat</span> <span class="tag">💰💰 Mid-range</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Samgyetang <span class="ko">(삼계탕)</span></h4>
+                        <p>Ginseng chicken soup — a whole young chicken stuffed with rice, ginseng & jujube. Hearty & healthy.</p>
+                        <p><strong>Famous:</strong> Tosokchon (near Gyeongbokgung)</p>
+                        <span class="tag">🍗 Soup</span> <span class="tag">💰💰 Mid-range</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Bibimbap <span class="ko">(비빔밥)</span></h4>
+                        <p>Mixed rice bowl with vegetables, egg, meat & gochujang. Stir it all together for perfection.</p>
+                        <p><strong>Try:</strong> Jeonju-style bibimbap</p>
+                        <span class="tag">🍚 Rice</span> <span class="tag">💰 Budget</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Kimchi Jjigae <span class="ko">(김치찌개)</span></h4>
+                        <p>Kimchi stew with pork & tofu — the ultimate Korean comfort food. Every restaurant has its own recipe.</p>
+                        <span class="tag">🌶️ Spicy</span> <span class="tag">💰 Budget</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Fried Chicken & Beer <span class="ko">(치맥)</span></h4>
+                        <p>Korean fried chicken is legendary — double-fried for maximum crunch. Pair with cold beer at a chimaek joint.</p>
+                        <p><strong>Best at:</strong> Yeouido Hangang Park (delivery!)</p>
+                        <span class="tag">🍗 Fried</span> <span class="tag">🍺 With Beer</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Naengmyeon <span class="ko">(냉면)</span></h4>
+                        <p>Cold buckwheat noodles in icy broth — refreshing and surprisingly perfect even in winter.</p>
+                        <span class="tag">🍜 Noodles</span> <span class="tag">❄️ Cold</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="food-section">
+                <h3>☕ Cafes & Desserts</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <h4>Korean Cafe Culture <span class="ko">(카페)</span></h4>
+                        <p>Seoul's cafe scene is next-level. Theme cafes, rooftop cafes, hidden alley cafes — each one an experience.</p>
+                        <p><strong>Areas:</strong> Ikseon-dong, Yeonnam-dong, Seongsu-dong</p>
+                        <span class="tag">☕ Coffee</span> <span class="tag">📸 Instagrammable</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Bingsu <span class="ko">(빙수)</span></h4>
+                        <p>Shaved ice dessert piled with toppings — mango, green tea, or classic red bean. Share one (they're huge!).</p>
+                        <p><strong>Try:</strong> Sulbing, Cafe Bora</p>
+                        <span class="tag">🍧 Dessert</span> <span class="tag">🍓 Sweet</span>
+                    </div>
+                    <div class="food-card">
+                        <h4>Dalgona Coffee <span class="ko">(달고나 커피)</span></h4>
+                        <p>Whipped coffee over iced milk — born in Seoul and went viral worldwide. Try the real thing!</p>
+                        <span class="tag">☕ Coffee</span> <span class="tag">📸 Trendy</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="food-section">
+                <h3>📍 Neighborhood Food Guide</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <h4>Myeongdong <span class="ko">(명동)</span></h4>
+                        <p>Street food paradise! Try everything on sticks — cheese, squid, tornado potatoes. Also great for kyochon chicken.</p>
+                    </div>
+                    <div class="food-card">
+                        <h4>Hongdae <span class="ko">(홍대)</span></h4>
+                        <p>Youth food scene — trendy restaurants, late-night eats, unique cafes. Try the 24-hour food alleys.</p>
+                    </div>
+                    <div class="food-card">
+                        <h4>Gangnam <span class="ko">(강남)</span></h4>
+                        <p>Upscale dining, premium Korean BBQ, and sleek modern cafes. Garosu-gil for brunch spots.</p>
+                    </div>
+                    <div class="food-card">
+                        <h4>COEX / Starfield <span class="ko">(코엑스)</span></h4>
+                        <p>Massive underground mall with food courts, bakeries, and restaurants from all over Korea.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>🇰🇷 Seoul Adventure 2026 · Feb 28 – Mar 4 · 안녕히 가세요! 👋</p>
+    </footer>
+
+    <script>
+        // ── Theme ──
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.querySelector('.theme-toggle');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                btn.textContent = '🌙 Dark';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️ Light';
+                localStorage.setItem('theme', 'dark');
+            }
+            // Re-init map tiles if map loaded
+            if (window._map && window._tileLayer) updateMapTiles();
+        }
+        (function() {
+            const t = localStorage.getItem('theme');
+            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.querySelector('.theme-toggle').textContent = '☀️ Light';
+            }
+        })();
+
+        // ── Tabs ──
+        function showTab(name) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            const target = name === 'map' ? 'map-tab' : name;
+            document.getElementById(target).classList.add('active');
+            event.target.classList.add('active');
+            if (name === 'map' && !window._mapLoaded) initMap();
+        }
+
+        // ── Past Days ──
+        (function dimPast() {
+            const now = new Date();
+            const seoulNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+            const today = seoulNow.toISOString().slice(0, 10);
+            document.querySelectorAll('.day-section[data-date]').forEach(el => {
+                if (el.dataset.date < today) el.classList.add('past');
+            });
+        })();
+
+        // ── Map ──
+        const LOCATIONS = [
+            { name: "Incheon Airport (ICN)", ko: "인천공항", lat: 37.4602, lng: 126.4407, day: 5, icon: "✈️" },
+            { name: "Myeongdong", ko: "명동", lat: 37.5636, lng: 126.9834, day: 1, icon: "🛍️" },
+            { name: "Cheonggyecheon Stream", ko: "청계천", lat: 37.5694, lng: 126.9804, day: 1, icon: "🌊" },
+            { name: "Gyeongbokgung Palace", ko: "경복궁", lat: 37.5796, lng: 126.9770, day: 2, icon: "🏯" },
+            { name: "Bukchon Hanok Village", ko: "북촌한옥마을", lat: 37.5826, lng: 126.9852, day: 2, icon: "🏘️" },
+            { name: "Ewha Womans University", ko: "이화여자대학교", lat: 37.5642, lng: 126.9473, day: 2, icon: "🎓" },
+            { name: "Hongdae", ko: "홍대", lat: 37.5513, lng: 126.9242, day: 2, icon: "🎵" },
+            { name: "Namsan Park", ko: "남산공원", lat: 37.5512, lng: 126.9882, day: 3, icon: "🌲" },
+            { name: "N Seoul Tower", ko: "엔서울타워", lat: 37.5512, lng: 126.9882, day: 3, icon: "🗼" },
+            { name: "Banobagi Gangnam", ko: "바노바기 강남", lat: 37.4979, lng: 127.0276, day: 4, icon: "💆" },
+            { name: "Starfield Library / COEX", ko: "별마당 도서관", lat: 37.5118, lng: 127.0593, day: 4, icon: "📚" },
+            { name: "Yeouido Hangang Park", ko: "여의도한강공원", lat: 37.5249, lng: 126.9275, day: 4, icon: "🏞️" },
+        ];
+
+        const DAY_COLORS = { 1: '#c62828', 2: '#1565c0', 3: '#2e7d32', 4: '#e65100', 5: '#6a1b9a' };
+
+        function initMap() {
+            window._mapLoaded = true;
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            script.onload = function() {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                document.head.appendChild(link);
+
+                window._map = L.map('map').setView([37.5665, 126.9780], 12);
+                updateMapTiles();
+
+                LOCATIONS.forEach(loc => {
+                    const color = DAY_COLORS[loc.day] || '#c62828';
+                    const marker = L.circleMarker([loc.lat, loc.lng], {
+                        radius: 10, fillColor: color, color: '#fff',
+                        weight: 2, opacity: 1, fillOpacity: 0.9
+                    }).addTo(window._map);
+                    marker.bindPopup(`<strong>${loc.icon} ${loc.name}</strong><br><span style="opacity:0.7">${loc.ko}</span><br><em>Day ${loc.day}</em>`);
+                });
+            };
+            document.head.appendChild(script);
+        }
+
+        function updateMapTiles() {
+            if (!window._map) return;
+            if (window._tileLayer) window._map.removeLayer(window._tileLayer);
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const tileUrl = isDark
+                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+            window._tileLayer = L.tileLayer(tileUrl, {
+                attribution: '&copy; OSM', maxZoom: 18
+            }).addTo(window._map);
+        }
+
+        // ── SW Registration ──
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(() => console.log('SW registered'));
+        }
+    </script>
+</body>
+</html>
