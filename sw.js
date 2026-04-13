@@ -1,5 +1,5 @@
 // Seoul Adventure 2026 — Service Worker
-const CACHE_NAME = 'seoul-v3';
+const CACHE_NAME = 'seoul-v4';
 const ASSETS = [
   './',
   './index.html',
