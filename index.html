@@ -581,8 +581,11 @@
             const now = new Date();
             const seoulNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
             const today = seoulNow.toISOString().slice(0, 10);
+            const threeDaysAgo = new Date(seoulNow.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
             document.querySelectorAll('.day-section[data-date]').forEach(el => {
-                if (el.dataset.date < today) el.classList.add('past');
+                const dateStr = el.dataset.date;
+                // Only dim if date is in the past but within the last 3 days
+                if (dateStr < today && dateStr >= threeDaysAgo) el.classList.add('past');
             });
         })();
 
